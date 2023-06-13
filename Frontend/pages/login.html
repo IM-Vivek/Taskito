@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOGIN</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="../css/common.css">
+  <style>
+    .alert {
+      display: flex;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+  </header>
+  <main>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light static-top ">
+      <div class="container">
+        <div class="navbar-brand brand">
+          <img src="../asset/laptop.svg" alt="logo" class="hearder-img">
+          <p class="header-title">To-Do List</p>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link header-title" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link header-title current" href="#">Login
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link header-title" href="./signup.html">Signup</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </nav>
+    <div class="alert"></div>
+    <section class="container">
+      <div id="login-row" class="row all-center align-items-center">
+        <div id="login-column" class="col-md-12 all-center">
+          <div id="login-box" class="col-md-12">
+            <form id="login-form" class="form">
+              <h3 class="text-center text-info-c">Login</h3>
+              <div class="form-group">
+                <label for="email" class="text-info-c">Email:</label><br>
+                <input type="email" name="email" id="email" class="form-control">
+                <div class='error' id="email-error"></div>
+              </div>
+              <div class="form-group">
+                <label for="password" class="text-info-c">Password:</label><br>
+                <input type="password" name="password" id="password" class="form-control">
+                <div class='error' id="pass-error"></div>
+              </div>
+              <div class="form-group ">
+                <button class="button" type="submit" name="submit" id="login-btn" onclick="onLogin(event)"><span>Login</span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+  </footer>
+  <script>
+    if(localStorage.getItem('Taskito-user')){
+      location.href = './profile.html';
+    }
+    function onLogin(e) {
+      e.preventDefault();
+      document.getElementById("email-error").innerText = ""
+      document.getElementById("pass-error").innerText = ""
+      let email = document.getElementById("email").value
+      let pass = document.getElementById("password").value
+      if (email == '') {
+        document.getElementById("email-error").innerText = "E-mail is Mandatory"
+      } else if (pass == '') {
+        document.getElementById("pass-error").innerText = "Password is Mandatory"
+      } else {
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "email": email,
+            "password": pass
+          }),
+        };
+        let alert = document.getElementsByClassName("alert")[0];
+        fetch("http://localhost:1200/users/login",options).then(res => res.json()).then(data =>{
+          if(data["result"]){
+            localStorage.setItem("Taskito-user",JSON.stringify(data["data"]));
+            localStorage.removeItem('Taskito-guest');
+            location.href = './profile.html'
+          }else{
+            alert.style.display = 'flex';
+            alert.style.background = "#ffaed5";
+            alert.innerHTML = `${data["msg"]}<div class="closebtn" onclick="this.parentElement.style.display='none';"> &times; </div>`
+
+          }
+        })
+      }
+    }
+  </script>
+</body>
+
+</html>
